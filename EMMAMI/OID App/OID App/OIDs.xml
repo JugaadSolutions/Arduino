@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfOID xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <OID>
+    <ID>0</ID>
+    <Settings>
+      <IP>192.168.14.139</IP>
+      <Gateway>192.168.14.1</Gateway>
+      <Subnet>192.168.14.136</Subnet>
+    </Settings>
+    <Parameters>
+      <OIDParameter>
+        <ChannelID>1</ChannelID>
+        <Tag>M/C SPEED </Tag>
+        <Units> MPM ,</Units>
+        <LowerLimit>-100</LowerLimit>
+        <UpperLimit>500</UpperLimit>
+        <UpperCount>1023</UpperCount>
+        <LowerCount>0</LowerCount>
+        <Precision>0</Precision>
+      </OIDParameter>
+      <OIDParameter>
+        <ChannelID>2</ChannelID>
+        <Tag>Basis WT </Tag>
+        <Units> GSM ,</Units>
+        <LowerLimit>100</LowerLimit>
+        <UpperLimit>500</UpperLimit>
+        <UpperCount>1023</UpperCount>
+        <LowerCount>0</LowerCount>
+        <Precision>0</Precision>
+      </OIDParameter>
+      <OIDParameter>
+        <ChannelID>3</ChannelID>
+        <Tag>Production Rate </Tag>
+        <Units> TPH </Units>
+        <LowerLimit>0.5</LowerLimit>
+        <UpperLimit>30.5</UpperLimit>
+        <UpperCount>1023</UpperCount>
+        <LowerCount>0</LowerCount>
+        <Precision>1</Precision>
+      </OIDParameter>
+      <OIDParameter>
+        <ChannelID>4</ChannelID>
+        <Tag>Production Rate </Tag>
+        <Units> TPH</Units>
+        <LowerLimit>0</LowerLimit>
+        <UpperLimit>100</UpperLimit>
+        <UpperCount>1023</UpperCount>
+        <LowerCount>0</LowerCount>
+        <Precision>2</Precision>
+      </OIDParameter>
+    </Parameters>
+  </OID>
+</ArrayOfOID>

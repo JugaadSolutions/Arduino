@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ArrayOfOIDParameter>
+  <OIDParameter>
+    <ChannelID>1</ChannelID>
+	<Tag>M/C SPEED</Tag>
+	<Units>mpm</Units>
+	<LowerLimit>200</LowerLimit>
+	<UpperLimit>800</UpperLimit>
+	<Offset>327</Offset>
+	<ScaleFactor>1173</ScaleFactor>
+  </OIDParameter>
+    <OIDParameter>
+    <ChannelID>2</ChannelID>
+	<Tag>M/C SPEED</Tag>
+	<Units>mpm</Units>
+	<LowerLimit>200</LowerLimit>
+	<UpperLimit>800</UpperLimit>
+	<Offset>327</Offset>
+	<ScaleFactor>1173</ScaleFactor>
+  </OIDParameter>
+    <OIDParameter>
+    <ChannelID>3</ChannelID>
+	<Tag>M/C SPEED</Tag>
+	<Units>mpm</Units>
+	<LowerLimit>200</LowerLimit>
+	<UpperLimit>800</UpperLimit>
+	<Offset>327</Offset>
+	<ScaleFactor>1173</ScaleFactor>
+  </OIDParameter>
+    <OIDParameter>
+    <ChannelID>4</ChannelID>
+	<Tag>M/C SPEED</Tag>
+	<Units>mpm</Units>
+	<LowerLimit>200</LowerLimit>
+	<UpperLimit>800</UpperLimit>
+	<Offset>327</Offset>
+	<ScaleFactor>1173</ScaleFactor>
+  </OIDParameter>
+</ArrayOfOIDParameter>

@@ -1,0 +1,12 @@
+NOTE:
+
+1) Read checked in RFID card data on serial2 and send the data on serial3
+   and change the state into IN PROCESS
+2) Read checked out RFID card data on serial1 and send the data on serial3
+   and change the state into IN PROCESS
+3) wait for the response on serial3
+4) If the data received on the serial3 is valid swith the state into CHECKED IN 
+   or CHECKED OUT state.
+   If not valid switch state back to the previous state.
+
+[RTU]>Rx > 15:32:00:043 : 01  03  0E  80  01  31  35  30  30  31  41  34  31  46  42  42  35  C4  E2  

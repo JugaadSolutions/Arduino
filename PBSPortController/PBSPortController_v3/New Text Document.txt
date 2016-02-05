@@ -1,0 +1,9 @@
+v1: No response checking (Subhra)
+
+v2: response checking
+
+
+v3: Modbus slave and data logging added
+
+
+
