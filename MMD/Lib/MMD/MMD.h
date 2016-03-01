@@ -70,7 +70,6 @@ typedef struct _MMD_CONFIG
 }MMD_Config;
 
 
-#ifdef OLD
 typedef struct _MMD_SEGMENT
 {
 	UINT8 id;
@@ -102,40 +101,5 @@ extern void MMD_refreshDisplay( void );
 extern void MMD_task( void );
 void WriteDataToDisplay( UINT8 digit, UINT8 data );
 void MMD_changeSymbol( UINT8 segmentID , UINT8 symbolID );
-#else
-
-typedef struct _MMD_Segment
-{
-	UINT8 id;
-	UINT8 startAddress;
-	UINT8 length;
-	UINT8 *symbolBuffer;
-	UINT8 symbolCount;
-	SCROLL_SPEED scrollSpeed;
-	UINT8 speedCount;
-	UINT8 curSymbolIndex;
-	UINT8 switchBuffer;
-	UINT8 shiftCount;
-	UINT8 curShiftBuffer;
-	UINT8 curDispBuffer;
-	UINT8 DispBuffer[2][ROWS_PER_SYMBOL][MMD_MAX_CHARS];
-	UINT8 DispDataBuffer[ROWS_PER_SYMBOL][MMD_MAX_CHARS];
-
-
-}MMD_Segment;	
-
-extern void MMD_init(void);
-extern BOOL MMD_configSegment( UINT8 id,  MMD_Config *config );
-extern void MMD_setScrollSpeed( UINT8 segmentID , SCROLL_SPEED speed );
-extern void MMD_setSegment( UINT8 segmentID , UINT8 *data);
-extern void MMD_clearSegment( UINT8 segmentID);
-extern void MMD_updateSegmentFromTo( UINT8 segmentID , UINT8 fromSymbolIndex , UINT8 toSymbolIndex, UINT8 *data);
-extern void MMD_refreshDisplay(void);
-extern void MMD_task(void);
-void WriteDataToDisplay(UINT8 digit, UINT8 data);
-void MMD_changeSymbol( UINT8 segmentID , UINT8 symbolID);
-#endif
-
 
 #endif
-

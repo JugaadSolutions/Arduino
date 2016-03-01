@@ -126,7 +126,7 @@ const UINT8 FontTable5x7[][8] = {	// ASCII	DEC
 
 };
 
-#ifdef OLD
+
 typedef struct _BITPACK_TABLE
 {
 	UINT8 mask;
@@ -278,17 +278,22 @@ BOOL MMD_configSegment( UINT8 id,  MMD_Config *config )
 	mmdSegment[id].scrollSpeed = config->scrollSpeed;	
 	
 	mmdSegment[id].DispBuffer[0] =MMD_Buffer + MMDBufferIndex ;
+	Serial.println((unsigned long)mmdSegment[id].DispBuffer[0], HEX);
 	
 	MMDBufferIndex +=ROWS_PER_SYMBOL* mmdSegment[id].length;
 	mmdSegment[id].DispBuffer[1] = MMD_Buffer + MMDBufferIndex ;
-
+	Serial.println((unsigned long)mmdSegment[id].DispBuffer[1], HEX);
+	
 	MMDBufferIndex += ROWS_PER_SYMBOL* mmdSegment[id].length;
 	mmdSegment[id].DispDataBuffer = MMD_Buffer + MMDBufferIndex ;
-
+	Serial.println((unsigned long)mmdSegment[id].DispDataBuffer, HEX);
+	Serial.flush();
+	
 	MMDBufferIndex += ROWS_PER_SYMBOL* mmdSegment[id].length;
 	
 	mmdSegment[id].speedCount = mmdSegment[id].scrollSpeed;
-	i = ROWS_PER_SYMBOL * MMD_MAX_CHARS;
+	
+	i = ROWS_PER_SYMBOL * mmdSegment[id].length;
 	
 	memset((UINT8*)mmdSegment[id].DispDataBuffer,0,i);
 	memset((UINT8*)mmdSegment[id].DispBuffer[0],0,i);
@@ -314,9 +319,9 @@ BOOL MMD_configSegment( UINT8 id,  MMD_Config *config )
 				*((mmdSegment[id].DispBuffer[0])+(j *i)) = *((mmdSegment[id].DispDataBuffer)+(j *i));
 				*((mmdSegment[id].DispBuffer[1])+(j * i)) = *((mmdSegment[id].DispDataBuffer)+ (j*i));
 */
-				*((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i)) = ( (FontTable5x7[curSymbol][j]) );
-				*((mmdSegment[id].DispBuffer[0])+(MMD_MAX_CHARS * j + i)) = *((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i));
-				*((mmdSegment[id].DispBuffer[1])+(MMD_MAX_CHARS* j + i)) = *((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i));
+				*((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i)) = ( (FontTable5x7[curSymbol][j]) );
+				*((mmdSegment[id].DispBuffer[0])+(mmdSegment[id].length * j + i)) = *((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i));
+				*((mmdSegment[id].DispBuffer[1])+(mmdSegment[id].length* j + i)) = *((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i));
 			}
 			
 		}
@@ -334,9 +339,9 @@ BOOL MMD_configSegment( UINT8 id,  MMD_Config *config )
 			for( j = 0; j < ROWS_PER_SYMBOL ; j++)
 			{	
 
-				*((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i)) = ( (FontTable5x7[curSymbol][j]) );
-				*((mmdSegment[id].DispBuffer[0])+(MMD_MAX_CHARS * j + i)) = *((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i));
-				*((mmdSegment[id].DispBuffer[1])+(MMD_MAX_CHARS* j + i)) = *((mmdSegment[id].DispDataBuffer)+ (MMD_MAX_CHARS * j + i));
+				*((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i)) = ( (FontTable5x7[curSymbol][j]) );
+				*((mmdSegment[id].DispBuffer[0])+(mmdSegment[id].length * j + i)) = *((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i));
+				*((mmdSegment[id].DispBuffer[1])+(mmdSegment[id].length* j + i)) = *((mmdSegment[id].DispDataBuffer)+ (mmdSegment[id].length * j + i));
 			}
 			
 		}
@@ -386,7 +391,7 @@ void MMD_clearSegment(UINT8 id)
 		mmdSegment[id].curSymbolIndex = 0;
 		mmdSegment[id].length = 0;
 
-		size = ROWS_PER_SYMBOL*MMD_MAX_CHARS;	
+		size = ROWS_PER_SYMBOL*mmdSegment[id].length;	
 }
 
 void MMD_task(void)
@@ -441,7 +446,7 @@ void MMD_task(void)
 				for( k = 1; k < mmdSegment[i].length; k++)
 				{
 				//	*((mmdSegment[i].DispDataBuffer)+(j*(k-1))) <<= 1;
-					*((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))) <<= 1;
+					*((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))) <<= 1;
 					
 				/*	if( getBit(*((mmdSegment[i].DispDataBuffer)+(j*k)),7) == 1 )
 						setBit(((mmdSegment[i].DispDataBuffer)+(j*(k-1))) , 8-COLUMNS_PER_CHARACTER);
@@ -450,28 +455,28 @@ void MMD_task(void)
 					*((mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer])+(j*(k-1))) = *((mmdSegment[i].DispDataBuffer)+(j*(k-1)));
 				*/
 
-					if( getBit(*((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + k)),7) == 1 )
-						setBit(((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))) , 8-COLUMNS_PER_CHARACTER);
+					if( getBit(*((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + k)),7) == 1 )
+						setBit(((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))) , 8-COLUMNS_PER_CHARACTER);
 					else
-						clearBit(((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))),8-COLUMNS_PER_CHARACTER);
-					*((mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer])+(MMD_MAX_CHARS * j + (k-1))) = *((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1)));
+						clearBit(((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))),8-COLUMNS_PER_CHARACTER);
+					*((mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer])+(mmdSegment[i].length * j + (k-1))) = *((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1)));
 				}
 					
-				*((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))) <<= 1;
+				*((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))) <<= 1;
 				curSymbol = mmdSegment[i].symbolBuffer[mmdSegment[i].curSymbolIndex]-32;
 				 if( (curSymbol < 0) || (curSymbol > 0x63 ))
 					curSymbol = 0;	
 				curRowData	 = FontTable5x7[curSymbol][j];
 				if( getBit(curRowData,7-mmdSegment[i].shiftCount) == 1 )
 				{
-					setBit(((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))) , 8-COLUMNS_PER_CHARACTER);
+					setBit(((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))) , 8-COLUMNS_PER_CHARACTER);
 				}
 				else
 				{
-					clearBit(((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1))),8-COLUMNS_PER_CHARACTER);
+					clearBit(((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1))),8-COLUMNS_PER_CHARACTER);
 				}
 
-				*((mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer])+(MMD_MAX_CHARS * j + (k-1))) = *((mmdSegment[i].DispDataBuffer)+(MMD_MAX_CHARS * j + (k-1)));
+				*((mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer])+(mmdSegment[i].length * j + (k-1))) = *((mmdSegment[i].DispDataBuffer)+(mmdSegment[i].length * j + (k-1)));
 			}
 			++mmdSegment[i].shiftCount;
 
@@ -509,29 +514,32 @@ void MMD_refreshDisplay(void)
 	PORTF = B00000000;
 	
 	for( i = 0 ; i < MMD_MAX_SEGMENTS ; i++)
-	{
-
+	{	
+		//Timer1.stop(  );
 		for( j = 0 ; j < mmdSegment[i].length ; j++)
 		{
-			dataByte = *((mmdSegment[i].DispBuffer[mmdSegment[i].curDispBuffer])+((iSRState*MMD_MAX_CHARS)+j));
+			
+			dataByte = *((mmdSegment[i].DispBuffer[mmdSegment[i].curDispBuffer])+((iSRState*mmdSegment[i].length)+j));
+			
+			//Serial.println(dataByte, HEX);
+			//Serial.flush();
 
 			addr = mmdSegment[i].startAddress + j;					//set the address
-
-			if( addr >=64 )	//workaround for PCB flaw 
-			{				//- pins 39 & 40 are interchanged in 10 pin connector 
-				addr +=128;
-			}		
-		
+			
 			PORTA = addr;
 	
 			PORTC = ~dataByte;
 			
-			digitalWrite( DISPLAY_CONTROL, LOW );
+			//digitalWrite( DISPLAY_CONTROL, LOW );
+			PORTB &= ~_BV(PB5);
 			delayMicroseconds(10);
-			digitalWrite( DISPLAY_CONTROL, HIGH );	
+			//digitalWrite( DISPLAY_CONTROL, HIGH );	
+			PORTB |= _BV(PB5);
 
 		}
+		//Timer1.resume(  );
 	}
+	
 
 	switch( iSRState )
 	{
@@ -594,9 +602,14 @@ void MMD_refreshDisplay(void)
 				mmdSegment[i].curDispBuffer = (mmdSegment[i].curDispBuffer == 0) ?1 : 0 ;
 				mmdSegment[i].switchBuffer = 0;
 			}
+			//Serial.println((unsigned long)mmdSegment[i].DispBuffer[mmdSegment[i].curDispBuffer], HEX);
+			//Serial.flush();
 		}
+		
 #endif
 	}
+	
+
 }
 
 /*
@@ -626,477 +639,3 @@ void WriteDataToDisplay(UINT8 digit, UINT8 data)
 */
 }
 
-#else
-
-
-
-typedef struct _BITPACK_TABLE
-{
-	UINT8 mask;
-	UINT8 shiftCount;
-	
-}BITPACK_TABLE;
-
-BITPACK_TABLE rightBitPackTable[COLUMNS_PER_SYMBOL+1]={
-{0,0},{0x80,5},{0xC0,4},{0xE0,3},{0xF0,2},{0xF8,1}
-};
-
-
-BITPACK_TABLE leftBitPackTable[COLUMNS_PER_SYMBOL+1]={
-{0,0},{0x08,4},{0x18,3},{0x38,2},{0x78,1},{0xF8,0}
-};
-
-
-
-
-
-
-void WriteDataToDisplay(UINT8 digit, UINT8 data);
-void makeBitMap(UINT8 id , UINT8 row );
-
-
-#pragma idata mmd_data
-MMD_Segment mmdSegment[MMD_MAX_SEGMENTS]= {0};
-#pragma udata
-
-
-/*
-*------------------------------------------------------------------------------
-* static BOOL getBit(UINT8 data , UINT8 bitNo)
-*
-* Summary	: get a bit at specified position from a byte
-*
-* Input		: UINT8 data  - byte to get the bit 
-*		      UINT8 bitNo - bit position
-*
-* Output	: None
-*
-*------------------------------------------------------------------------------
-*/
-static BOOL getBit(UINT8 data , UINT8 bitNo)
-{
-	BOOL bitValue = (data & ((UINT8) 1 << bitNo)) ? 1 : 0;
-	return bitValue;
-}
-
-/*
-*------------------------------------------------------------------------------
-* static void setBit(UINT8 *data , UINT8 bitNo)
-*
-* Summary	: set a bit at specified position in  a byte
-*
-* Input		: UINT8 *data  - pointer to a byte to set the bit 
-*		      UINT8 bitNo - bit position
-*
-* Output	: None
-*
-*------------------------------------------------------------------------------
-*/
-static void setBit(UINT8 *data , UINT8 bitNo)
-{
-	*data  |= ((UINT8)1 << bitNo);
-	
-}
-
-/*
-*------------------------------------------------------------------------------
-* static void clearBit(UINT8 *data , UINT8 bitNo)
-*
-* Summary	: clear a bit at specified position in  a byte
-*
-* Input		: UINT8 *data  - pointer to a byte to clear the bit 
-*		      UINT8 bitNo - bit position
-*
-* Output	: None
-*
-*------------------------------------------------------------------------------
-*/
-static void clearBit(UINT8 *data , UINT8 bitNo)
-{
-	*data &= ~ (((UINT8) 1 << bitNo));
-}
-
-
-
-
-void MMD_init()
-{
-	UINT8 i,j,k;
-	
-	//DATA SELECTION
-    DDRC = B11111111 ;
-    DDRC = DDRC | B11111111;
-    PORTC = B00000000;    
-    
-	//DIGIT SELECTION
-    DDRA = B11111111 ;
-    DDRA = DDRA | B11111111;
-    PORTA = B00000000;  
-	
-	//row selection
-    DDRF = B11111111 ;
-    DDRF = DDRF | B11111111;
-    PORTF = B00000000;  
-	
-	pinMode( DISPLAY_CONTROL, OUTPUT );
-	digitalWrite( DISPLAY_CONTROL, HIGH );	
-	
-	for( i = 0; i < MMD_MAX_SEGMENTS ; i++)
-	{
-		mmdSegment[i].id = i+1;
-		mmdSegment[i].startAddress = 0;
-		mmdSegment[i].symbolBuffer = 0;
-		mmdSegment[i].symbolCount = 0;		
-		mmdSegment[i].scrollSpeed = SCROLL_SPEED_NONE;
-		mmdSegment[i].switchBuffer = 0;
-		mmdSegment[i].shiftCount = 0;
-		mmdSegment[i].speedCount = 0;
-		mmdSegment[i].curShiftBuffer = 0;
-		mmdSegment[i].curDispBuffer = 0;
-		mmdSegment[i].curSymbolIndex = 0;
-		mmdSegment[i].length = 0;
-		
-		j= ROWS_PER_SYMBOL*MMD_MAX_CHARS;
-		memset((void*)mmdSegment[i].DispDataBuffer,0,j);
-		memset((void*)mmdSegment[i].DispBuffer[0],0,j);
-		memset((void*)mmdSegment[i].DispBuffer[1],0,j);
-	}
-
-}
-
-
-BOOL MMD_configSegment( UINT8 id,  MMD_Config *config )
-{
-
-	UINT8 i,j,k;
-	INT8 curSymbolIndex,curSymbol;
-	MMD_Config *tmp;		//temp pointer to help in copying config info
-
-	if( id >= MMD_MAX_SEGMENTS					//check for allowable data
-		|| config->startAddress >= MMD_MAX_ADDRESS
-		|| config->symbolBuffer == 0)
-
-	{
-		return FALSE;
-	}
-
-	tmp = (MMD_Config*) &mmdSegment[id].startAddress;	//cast to config structure
-	*tmp = *config;									//copy 
-	
-	mmdSegment[id].speedCount = mmdSegment[id].scrollSpeed;
-	i = ROWS_PER_SYMBOL * MMD_MAX_CHARS;
-	memset((UINT8*)mmdSegment[id].DispDataBuffer,0,i);
-	memset((UINT8*)mmdSegment[id].DispBuffer[0],0,i);
-	memset((UINT8*)mmdSegment[id].DispBuffer[1],0,i);
-
-	if( mmdSegment[id].scrollSpeed == SCROLL_SPEED_NONE)
-	{
-		mmdSegment[id].curSymbolIndex = 0;
-		for( i = 0; i < mmdSegment[id].length ; i++)
-		{
-			
-			curSymbol = mmdSegment[id].symbolBuffer[mmdSegment[id].curSymbolIndex++]-32;
-			if( (curSymbol < 0) || (curSymbol > 0x63 ))
-				curSymbol = 0;
-			if(mmdSegment[id].curSymbolIndex >= mmdSegment[id].symbolCount)
-				mmdSegment[id].curSymbolIndex = 0;
-
-			for( j = 0; j < ROWS_PER_SYMBOL ; j++)
-			{	
-
-
-				mmdSegment[id].DispDataBuffer[j][i] = pgm_read_byte (FontTable5x7[curSymbol ][j]);
-				mmdSegment[id].DispBuffer[0][j][i] = mmdSegment[id].DispDataBuffer[j][i];
-				mmdSegment[id].DispBuffer[1][j][i] = mmdSegment[id].DispDataBuffer[j][i];
-			}
-			
-		}
-	}
-	else
-	{
-		mmdSegment[id].curSymbolIndex = 0;
-		for( i = 0; i < mmdSegment[id].length ; i++)
-		{
-			curSymbol = mmdSegment[id].symbolBuffer[mmdSegment[id].curSymbolIndex++]-32;
-	        if( (curSymbol < 0) || (curSymbol > 0x63 ))
-				curSymbol = 0;
-			if(mmdSegment[id].curSymbolIndex >= mmdSegment[id].symbolCount)
-				mmdSegment[id].curSymbolIndex = 0;
-			for( j = 0; j < ROWS_PER_SYMBOL ; j++)
-			{	
-
-				mmdSegment[id].DispDataBuffer[j][i] = pgm_read_byte (FontTable5x7[curSymbol ][j]);
-				mmdSegment[id].DispBuffer[0][j][i] = mmdSegment[id].DispDataBuffer[j][i];
-				mmdSegment[id].DispBuffer[1][j][i] = mmdSegment[id].DispDataBuffer[j][i];
-			}
-			
-		}
-	}
-	mmdSegment[id].curSymbolIndex = 0;
-	return TRUE;
-}
-
-void MMD_setScrollSpeed( UINT8 id , SCROLL_SPEED speed )
-{
-	
-	mmdSegment[id].scrollSpeed = speed;
-	mmdSegment[id].speedCount = speed;
-
-}	
-
-
-void MMD_changeSymbol( UINT8 segmentID , UINT8 symbolID)
-{
-	UINT8 j;
-	UINT8 curSymbol ;
-
-	curSymbol = mmdSegment[segmentID].symbolBuffer[symbolID]-32;
-
-	for( j = 0; j < ROWS_PER_SYMBOL ; j++)
-	{	
-
-		mmdSegment[segmentID].DispDataBuffer[j][symbolID] = (FontTable5x7[curSymbol ][j]) ;
-		mmdSegment[segmentID].DispBuffer[0][j][symbolID] = mmdSegment[0].DispDataBuffer[j][symbolID];
-		mmdSegment[segmentID].DispBuffer[1][j][symbolID] = mmdSegment[0].DispDataBuffer[j][symbolID];
-	}
-}
-
-void MMD_clearSegment(UINT8 id)
-{
-	UINT8 size;
-
-		mmdSegment[id].startAddress = 0;
-		mmdSegment[id].symbolBuffer = 0;
-		mmdSegment[id].symbolCount = 0;		
-		mmdSegment[id].scrollSpeed = SCROLL_SPEED_NONE;
-		mmdSegment[id].switchBuffer = 0;
-		mmdSegment[id].shiftCount = 0;
-		mmdSegment[id].speedCount = 0;
-		mmdSegment[id].curShiftBuffer = 0;
-		mmdSegment[id].curDispBuffer = 0;
-		mmdSegment[id].curSymbolIndex = 0;
-		mmdSegment[id].length = 0;
-
-		size = ROWS_PER_SYMBOL*MMD_MAX_CHARS;
-		
-		memset((UINT8*)mmdSegment[id].DispDataBuffer,0,size);
-		memset((UINT8*)mmdSegment[id].DispBuffer[0],0,size);
-		memset((UINT8*)mmdSegment[id].DispBuffer[1],0,size);
-
-	
-}
-void MMD_task(void)
-{
-	UINT8 i , j , k;
-	UINT8 curSymbol,curRowData;
-
-	for( i = 0; i < MMD_MAX_SEGMENTS ; i++)
-	{
-		if( mmdSegment[i].scrollSpeed != SCROLL_SPEED_NONE)
-		{
-			--mmdSegment[i].speedCount;
-			if( mmdSegment[i].speedCount > 0)	
-				continue;
-		}
-		mmdSegment[i].speedCount = mmdSegment[i].scrollSpeed;
-
-		//DISABLE_TMR1_INTERRUPT();
-		if( mmdSegment[i].switchBuffer == 0 )
-		{
-			mmdSegment[i].curShiftBuffer = ( mmdSegment[i].curDispBuffer == 0 )? 1 : 0;
-				
-		}
-		if(mmdSegment[i].switchBuffer == 1 )
-		{
-			//ENABLE_TMR1_INTERRUPT();
-		 	continue;
-		}
-	
-		//ENABLE_TMR1_INTERRUPT();
-	
-
-		if( mmdSegment[i].scrollSpeed == SCROLL_SPEED_NONE)
-		{/*
-			for( j = 0; j < ROWS_PER_SYMBOL; j++)
-			{
-				for( k = 0; k < mmdSegment[i].length; k++)
-				{
-					mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer][j][k] = mmdSegment[i].DispDataBuffer[j][k];
-				}
-			}
-		*/
-		}
-		else
-		{
-			
-			for( j = 0; j < ROWS_PER_SYMBOL; j++)
-			{
-				for( k = 1; k < mmdSegment[i].length; k++)
-				{
-					mmdSegment[i].DispDataBuffer[j][k-1] <<= 1;
-					
-					if( getBit(mmdSegment[i].DispDataBuffer[j][k],7) == 1 )
-						setBit(&mmdSegment[i].DispDataBuffer[j][k-1] , 8-COLUMNS_PER_CHARACTER);
-					else
-						clearBit(&mmdSegment[i].DispDataBuffer[j][k-1],8-COLUMNS_PER_CHARACTER);
-					mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer][j][k-1] = mmdSegment[i].DispDataBuffer[j][k-1];
-				}
-					
-				mmdSegment[i].DispDataBuffer[j][k-1] <<= 1;
-				curSymbol = mmdSegment[i].symbolBuffer[mmdSegment[i].curSymbolIndex]-32;
-				 if( (curSymbol < 0) || (curSymbol > 0x63 ))
-					curSymbol = 0;	
-				curRowData	 = FontTable5x7[curSymbol][j];
-				if( getBit(curRowData,7-mmdSegment[i].shiftCount) == 1 )
-				{
-					setBit(&(mmdSegment[i].DispDataBuffer[j][k-1]) , 8-COLUMNS_PER_CHARACTER);
-				}
-				else
-				{
-					clearBit(&(mmdSegment[i].DispDataBuffer[j][k-1]),8-COLUMNS_PER_CHARACTER);
-				}
-
-				mmdSegment[i].DispBuffer[mmdSegment[i].curShiftBuffer][j][k-1] = mmdSegment[i].DispDataBuffer[j][k-1];
-			}
-			++mmdSegment[i].shiftCount;
-
-			if( mmdSegment[i].shiftCount >= COLUMNS_PER_CHARACTER)
-			{
-				mmdSegment[i].curSymbolIndex++;
-				if( mmdSegment[i].curSymbolIndex >= mmdSegment[i].symbolCount)
-				{
-					mmdSegment[i].curSymbolIndex = 0;
-				}
-				
-				mmdSegment[i].shiftCount = 0;
-				
-			}
-			
-		}
-
-		//DISABLE_TMR1_INTERRUPT();
-		mmdSegment[i].switchBuffer = 1;
-		//ENABLE_TMR1_INTERRUPT();
-	}
-
-}			
-
-UINT8 iSRState = 0;
-void MMD_refreshDisplay(void)
-{
-	UINT8 dataByte,addr;
-	UINT8 i,j;
-
-	//MMD_CONTROL = 0;	//disable the display
-	PORTF = B00000000;
-	
-	for( i = 0 ; i < MMD_MAX_SEGMENTS ; i++)
-	{
-		
-		for( j = 0 ; j < mmdSegment[i].length ; j++)
-		{
-			dataByte = mmdSegment[i].DispBuffer[mmdSegment[i].curDispBuffer][iSRState][j];
-
-			addr = mmdSegment[i].startAddress + j;					//set the address
-			
-			PORTA = addr;
-	
-			PORTC = ~dataByte;
-
-			digitalWrite( DISPLAY_CONTROL, LOW );
-			delayMicroseconds(10);
-			digitalWrite( DISPLAY_CONTROL, HIGH );	
-
-		}
-	}
-
-	switch( iSRState )
-	{
-		case 0:
-			PORTF = B00000001;
-
-		break;
-
-		case 1:
-			PORTF = B00000010;
-
-		break;
-
-		case 2:
-			PORTF = B00000100;
-
-			break;
-
-		case 3:
-			PORTF = B00001000;
-			
-			break;
-
-		case 4:
-			PORTF = B00010000;
-
-			break;
-
-		case 5:
-			PORTF = B00100000;
-
-			break;
-
-		case 6:
-			PORTF = B01000000;
-
-			break;
-
- 		default:
-			break;
-	}
-
-//	MMD_CONTROL = 1;
-	iSRState++;
-	if( iSRState > ROWS_PER_SYMBOL )
-	{
-		iSRState = 0;
-
-#ifndef __MMD_STATIC__
-
-		for( i = 0 ; i < MMD_MAX_SEGMENTS ; i++)
-		{
-			if( mmdSegment[i].switchBuffer == 1 )
-			{
-				mmdSegment[i].curDispBuffer = (mmdSegment[i].curDispBuffer == 0) ?1 : 0 ;
-				mmdSegment[i].switchBuffer = 0;
-			}
-		}
-#endif
-	}
-}
-
-
-
-	
-
-
-
-/*
-*------------------------------------------------------------------------------
-* void WriteDataToDisplay(UINT8 digit, UINT8 data)
-*
-* Summary	: Write one byte data on the bus
-*
-* Input		: UINT8 digit - digit number to write the data
-*			  UINT8 dataByte - data byte for the digit
-*
-* Output	: None
-*------------------------------------------------------------------------------
-*/
-void WriteDataToDisplay(UINT8 digit, UINT8 data)
-{
-	if( digit >=64 )
-	{
-		digit+=128;
-	}
-
-
-}
-
-#endif

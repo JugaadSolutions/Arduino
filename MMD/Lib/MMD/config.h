@@ -39,8 +39,8 @@ typedef double 				DOUBLE;		//32 bits 	-126(Exponent) 	128(Exponent)
 
 #define	OLD
 //MMD module configuration
-#define MMD_MAX_CHARS		32
-#define MMD_MAX_SEGMENTS	1
+#define MMD_MAX_CHARS		28
+#define MMD_MAX_SEGMENTS	5
 #define MMD_MAX_ADDRESS		128
 //#define __MMD_STATIC__
 
